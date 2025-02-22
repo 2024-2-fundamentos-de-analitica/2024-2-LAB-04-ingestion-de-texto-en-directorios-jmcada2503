@@ -4,9 +4,39 @@
 """
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
-
+import os
+import pandas as pd
 
 def pregunta_01():
+
+    def generar_csv(ruta_origen, ruta_destino, nombre_archivo):
+        carpetas_sentimiento = []
+        for elemento in os.listdir(ruta_origen):
+            if os.path.isdir(os.path.join(ruta_origen, elemento)):
+                carpetas_sentimiento.append(elemento)
+        
+        datos = []
+        for carpeta in carpetas_sentimiento:
+            ruta_carpeta = os.path.join(ruta_origen, carpeta)
+            archivos_texto = os.listdir(ruta_carpeta)
+            
+            for archivo in archivos_texto:
+                ruta_archivo = os.path.join(ruta_carpeta, archivo)
+                with open(ruta_archivo, "r", encoding="utf-8") as archivo_texto:
+                    primera_linea = archivo_texto.readline().strip()
+                    datos.append([primera_linea, carpeta])
+        
+        df_resultado = pd.DataFrame(datos, columns=["phrase", "target"])
+        
+        if not os.path.isdir(ruta_destino):
+            os.makedirs(ruta_destino)
+        
+        df_resultado.to_csv(os.path.join(ruta_destino, nombre_archivo), index=False)
+    generar_csv("files/input/test", "files/output", "test_dataset.csv")
+    generar_csv("files/input/train", "files/output", "train_dataset.csv")
+
+
+
     """
     La información requerida para este laboratio esta almacenada en el
     archivo "files/input.zip" ubicado en la carpeta raíz.
